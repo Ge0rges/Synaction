@@ -6,9 +6,24 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		FB51C86A1E4F71FB0054903F /* UniversalLib */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FB51C86B1E4F71FB0054903F /* Build configuration list for PBXAggregateTarget "UniversalLib" */;
+			buildPhases = (
+				FB51C86E1E4F72140054903F /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = UniversalLib;
+			productName = UniversalLib;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		FB51C8601E4F6F9E0054903F /* Synaction.m in Sources */ = {isa = PBXBuildFile; fileRef = FB51C85F1E4F6F9E0054903F /* Synaction.m */; };
 		FB51C8611E4F6F9E0054903F /* Synaction.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FB51C85E1E4F6F9E0054903F /* Synaction.h */; };
+		FB51C8691E4F70720054903F /* ConnectivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB51C8681E4F70720054903F /* ConnectivityManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +43,8 @@
 		FB51C85B1E4F6F9E0054903F /* libSynaction.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSynaction.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB51C85E1E4F6F9E0054903F /* Synaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Synaction.h; sourceTree = "<group>"; };
 		FB51C85F1E4F6F9E0054903F /* Synaction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Synaction.m; sourceTree = "<group>"; };
+		FB51C8671E4F70720054903F /* ConnectivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectivityManager.h; sourceTree = "<group>"; };
+		FB51C8681E4F70720054903F /* ConnectivityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectivityManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +79,8 @@
 			children = (
 				FB51C85E1E4F6F9E0054903F /* Synaction.h */,
 				FB51C85F1E4F6F9E0054903F /* Synaction.m */,
+				FB51C8671E4F70720054903F /* ConnectivityManager.h */,
+				FB51C8681E4F70720054903F /* ConnectivityManager.m */,
 			);
 			path = Synaction;
 			sourceTree = "<group>";
@@ -100,6 +119,11 @@
 						DevelopmentTeam = 7DTJP5N92F;
 						ProvisioningStyle = Automatic;
 					};
+					FB51C86A1E4F71FB0054903F = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 7DTJP5N92F;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = FB51C8561E4F6F9E0054903F /* Build configuration list for PBXProject "Synaction" */;
@@ -115,15 +139,33 @@
 			projectRoot = "";
 			targets = (
 				FB51C85A1E4F6F9E0054903F /* Synaction */,
+				FB51C86A1E4F71FB0054903F /* UniversalLib */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FB51C86E1E4F72140054903F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\n# Step 1. Build Device and Simulator versions\nxcodebuild -target ImageFilters ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\nxcodebuild -target ImageFilters -configuration ${CONFIGURATION} -sdk iphonesimulator -arch i386 BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 2. Create universal binary file using lipo\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\"\n\n# Last touch. copy the header files. Just for convenience\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/include\" \"${UNIVERSAL_OUTPUTFOLDER}/\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		FB51C8571E4F6F9E0054903F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB51C8691E4F70720054903F /* ConnectivityManager.m in Sources */,
 				FB51C8601E4F6F9E0054903F /* Synaction.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -239,6 +281,22 @@
 			};
 			name = Release;
 		};
+		FB51C86C1E4F71FB0054903F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FB51C86D1E4F71FB0054903F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -256,6 +314,14 @@
 			buildConfigurations = (
 				FB51C8651E4F6F9E0054903F /* Debug */,
 				FB51C8661E4F6F9E0054903F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		FB51C86B1E4F71FB0054903F /* Build configuration list for PBXAggregateTarget "UniversalLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FB51C86C1E4F71FB0054903F /* Debug */,
+				FB51C86D1E4F71FB0054903F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};

@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FB51C85A1E4F6F9E0054903F"
-               BuildableName = "libSynaction.a"
-               BlueprintName = "Synaction"
+               BlueprintIdentifier = "FB51C86A1E4F71FB0054903F"
+               BuildableName = "UniversalLib"
+               BlueprintName = "UniversalLib"
                ReferencedContainer = "container:Synaction.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FB51C85A1E4F6F9E0054903F"
-            BuildableName = "libSynaction.a"
-            BlueprintName = "Synaction"
+            BlueprintIdentifier = "FB51C86A1E4F71FB0054903F"
+            BuildableName = "UniversalLib"
+            BlueprintName = "UniversalLib"
             ReferencedContainer = "container:Synaction.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -63,9 +63,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FB51C85A1E4F6F9E0054903F"
-            BuildableName = "libSynaction.a"
-            BlueprintName = "Synaction"
+            BlueprintIdentifier = "FB51C86A1E4F71FB0054903F"
+            BuildableName = "UniversalLib"
+            BlueprintName = "UniversalLib"
             ReferencedContainer = "container:Synaction.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
