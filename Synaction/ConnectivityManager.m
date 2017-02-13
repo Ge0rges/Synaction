@@ -7,9 +7,9 @@
 //  Copyright (c) 2015 Georges Kanaan. All rights reserved.
 //
 
-#import "ConnectivityManager.h"
+#import "Synaction.h"
 
-#define serviceTypeKey @"Airly"
+#define serviceTypeKey @"synaction-syncservice"
 
 @interface ConnectivityManager ()
 
@@ -149,10 +149,6 @@
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
   if ([self.delegate respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
     [self.delegate session:session didReceiveData:data fromPeer:peerID];
-  }
-  
-  if ([self.networkPlayerManager respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
-    [self.networkPlayerManager session:session didReceiveData:data fromPeer:peerID];
   }
 }
 

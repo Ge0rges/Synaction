@@ -43,7 +43,7 @@
 // Meant for speakers.
 - (void)calculateTimeOffsetWithHost {
   hostTimeOffset = 0;
-  self.connectivityManager.networkPlayerManager = self;// Needed for reply.
+  self.connectivityManager.delegate = self;// Needed for reply calls.
   
   NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
                                                                                       @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]

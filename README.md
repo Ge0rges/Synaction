@@ -3,17 +3,21 @@ A library that allows you to perform code on multiple devices at the same time, 
 
 Synaction allows you to execute a block of code on different and multiple iDevices, all connected through the multipeer connectivity framework, at an (almost) exact time. It uses mach time and calculates the precise offset between the host device, and it's peers.
 
-## How to
+# How to
 
-Add the library and header file into your project, they can be found in the `Synaction Product` folder.
+Add the library and header file into your project, they can be found in the `Synaction Product` folder. And import `Synaction.h` wherever you'll be using the class.
 
-First get an instance of Synaction by calling `+ sharedInstance`.
+## Network Setup 
+Bundled with Synaction is ConnectivityManager, a MultipeerConnectivity wrapper. Synaction uses it to send data between devices.
+1.To set it up, first call `+sharedManagerWithDisplayName:`.
+2.On the host device call `-setupBrowser` and on the peers call `-advertiseSelfInSessions:YES`.
+3.To present the connection interface, on the view controller present the `browser` (property of the Connectivity Manager).
 
-To execute code at the same time, first calculate the offset with the host, by calling `- calculateTimeOffsetWithHost` on the peer device(s).
-
-Then use `- atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block` to perform `block` at `val` nano time. `val` should be a value in nanoseconds. 
-
-To accurately calculate this value you can get the current mach time in nano seconds with `- currentTime`.
+## Synaction Setup
+1. First get an instance of Synaction by calling `+ sharedInstance`.
+2. To execute code at the same time, first calculate the offset with the host, by calling `- calculateTimeOffsetWithHost` on the peer device(s).
+3. Then use `- atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block` to perform `block` at `val` nano time. `val` should be a value in nanoseconds. 
+4. To accurately calculate this value you can get the current mach time in nano seconds with `- currentTime`.
 
 # Credits
 Both the connectivity manager, and the core components of the mach time calculations were found online.
