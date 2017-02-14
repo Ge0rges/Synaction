@@ -14,8 +14,8 @@ Bundled with Synaction is ConnectivityManager, a MultipeerConnectivity wrapper. 
 3.To present the connection interface, on the view controller present the `browser` (property of the Connectivity Manager).
 
 ## Synaction Setup
-1. First get an instance of Synaction by calling `+ sharedInstance`.
-2. To execute code at the same time, first calculate the offset with the host, by calling `- calculateTimeOffsetWithHost` on the peer device(s).
+1. First get an instance of Synaction by calling `+sharedInstance`.
+2. To execute code at the same time, first calculate the offset with the host, by calling `- calculateTimeOffsetWithHostFromStart:YES` on the peer device(s).
 3. Then use `- atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block` to perform `block` at `val` nano time. `val` should be a value in nanoseconds. 
 4. To accurately calculate this value you can get the current mach time in nano seconds with `- currentTime`.
 

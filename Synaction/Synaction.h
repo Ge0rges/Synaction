@@ -50,7 +50,7 @@
 + (instancetype _Nonnull)sharedManager;
 
 
-- (void)calculateTimeOffsetWithHost;
+- (void)calculateTimeOffsetWithHostFromStart:(BOOL)resetBools;
 - (uint64_t)currentTime;
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;
 
