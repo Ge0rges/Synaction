@@ -13,8 +13,8 @@
 #import <mach/mach_time.h>
 
 @interface Synaction () {
-  uint64_t hostTimeOffset;
-  uint64_t tempHostTimeOffset;
+  int64_t hostTimeOffset;
+  int64_t tempHostTimeOffset;
   BOOL secondPing;
   BOOL calibrated;
 }
@@ -79,10 +79,8 @@
   dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
   dispatch_source_set_event_handler(timer, ^{
     dispatch_source_cancel(timer); // one shot timer
-    uint64_t currentTime = [self currentTime];
-    while ((int64_t)(val - currentTime) > 1) {//while ((int64_t)(val - [self getCurrentTime]) > 1) {
+    while ((int64_t)(val - [self currentTime]) > 1) {
       [NSThread sleepForTimeInterval:0];
-      currentTime = [self currentTime];
     }
     block();
   });
@@ -119,7 +117,7 @@
       hostTimeOffset = (([self currentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
       
       // Check that two calculated offsets don't differ by much, do the average.
-      if (llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)) > 10000) {// Error margin in nano seconds
+      if (llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)) > 5000) {// Error margin in nano seconds
         // Offsets are above error margin, restart process.
         [self calculateTimeOffsetWithHostFromStart:YES];
         
