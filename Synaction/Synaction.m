@@ -117,7 +117,7 @@
       hostTimeOffset = (([self currentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
       
       // Check that two calculated offsets don't differ by much, do the average.
-      if (llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)) > 5000) {// Error margin in nano seconds
+      if (llabs(tempHostTimeOffset - hostTimeOffset) > 5000) {// Error margin in nano seconds
         // Offsets are above error margin, restart process.
         [self calculateTimeOffsetWithHostFromStart:YES];
         
