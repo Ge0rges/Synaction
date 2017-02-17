@@ -17,7 +17,7 @@ Bundled with Synaction is ConnectivityManager, a MultipeerConnectivity wrapper. 
 1. First get an instance of Synaction by calling `+sharedInstance`.
 2. To execute code at the same time, first calculate the offset with the host, by calling `- calculateTimeOffsetWithHostFromStart:YES` on the peer device(s).
 3. Then use `- atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block` to perform `block` at `val` nano time. `val` should be a value in nanoseconds. 
-4. To accurately calculate this value you can get the current mach time in nano seconds with `- currentTime`.
+4. To accurately calculate this value you can get the current mach time in nano seconds with `- currentNetworkTime`.
 
 # Credits
 Both the connectivity manager, and the core components of the mach time calculations were found online.
