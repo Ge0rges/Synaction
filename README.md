@@ -19,6 +19,9 @@ Bundled with Synaction is ConnectivityManager, a MultipeerConnectivity wrapper. 
 3. Then use `- atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block` to perform `block` at `val` nano time. `val` should be a value in nanoseconds. 
 4. To accurately calculate this value you can get the current mach time in nano seconds with `- currentNetworkTime`.
 
+##Documentation
+Documentation for the various functions will (hopefully) eventually be written. Meanwhile, the function names are pretty self explanatory, otherwise post an issue. If you'd like to contribute to the docs just submit a pull request.
+
 # Credits
 Both the connectivity manager, and the core components of the mach time calculations were found online.
 [Connectvity Manager](http://stackoverflow.com/a/20907425/2210825 "Stackoverflow Answer")
