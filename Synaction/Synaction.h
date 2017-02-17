@@ -44,6 +44,7 @@
 
 @end
 
+typedef void(^ _Nullable completionBlockPeerID)(MCPeerID * _Nullable error);
 
 @interface Synaction : NSObject <ConnectivityManagerDelegate>
 
@@ -51,9 +52,12 @@
 
 
 - (void)calculateTimeOffsetWithHostFromStart:(BOOL)resetBools;
-- (uint64_t)currentTime;
+- (uint64_t)currentNetworkTime;
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;
-
+- (void)executeBlockWhenPeerCalibrates:(MCPeerID * _Nonnull)peer block:(completionBlockPeerID)completionBlock;
+- (void)askPeersToCalculateOffset;
 - (void)session:(MCSession * _Nonnull)session didReceiveData:(NSData * _Nonnull)data fromPeer:(MCPeerID * _Nonnull)peerID;
+
+@property (strong, nonatomic) NSMutableArray <MCPeerID*> * _Nullable calibratedPeers;
 
 @end
