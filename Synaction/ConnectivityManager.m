@@ -9,7 +9,7 @@
 
 #import "Synaction.h"
 
-#define serviceTypeKey @"synaction-syncservice"
+#define serviceTypeKey @"synaction"
 
 @interface ConnectivityManager ()
 
@@ -100,6 +100,10 @@
   if ([self.delegate respondsToSelector:@selector(session:peer:didChangeState:)]) {
     [self.delegate session:session peer:peerID didChangeState:state];
   }
+  
+  if ([self.synaction respondsToSelector:@selector(session:peer:didChangeState:)]) {
+    [self.synaction session:session peer:peerID didChangeState:state];
+  }
 }
 
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {}
@@ -138,17 +142,29 @@
   if ([self.delegate respondsToSelector:@selector(session:didStartReceivingResourceWithName:fromPeer:withProgress:)]) {
     [self.delegate session:session didStartReceivingResourceWithName:resourceName fromPeer:peerID withProgress:progress];
   }
+  
+  if ([self.synaction respondsToSelector:@selector(session:didStartReceivingResourceWithName:fromPeer:withProgress:)]) {
+    [self.synaction session:session didStartReceivingResourceWithName:resourceName fromPeer:peerID withProgress:progress];
+  }
 }
 
 - (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
   if ([self.delegate respondsToSelector:@selector(session:didFinishReceivingResourceWithName:fromPeer:atURL:withError:)]) {
     [self.delegate session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
   }
+  
+  if ([self.synaction respondsToSelector:@selector(session:didFinishReceivingResourceWithName:fromPeer:atURL:withError:)]) {
+    [self.synaction session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
+  }
 }
 
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
   if ([self.delegate respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
     [self.delegate session:session didReceiveData:data fromPeer:peerID];
+  }
+  
+  if ([self.synaction respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
+    [self.synaction session:session didReceiveData:data fromPeer:peerID];
   }
 }
 
