@@ -14,7 +14,7 @@
 
 @interface Synaction () {
   NSMutableArray *calculatedOffsets;
-  BOOL calibrated;
+  BOOL isCalibrating;
 }
 
 @property (strong, nonatomic) ConnectivityManager *connectivityManager;
@@ -36,13 +36,13 @@
     sharedManager.hostTimeOffset = 0;
     sharedManager.numberOfCalibrations = 1;
     sharedManager.calibratedPeers = [NSMutableSet new];
-    sharedManager->calibrated = NO;
     sharedManager->calculatedOffsets = [NSMutableArray new];
     
   });
   
   return sharedManager;
 }
+
 
 #pragma mark - Network Time Sync
 // Host
@@ -60,27 +60,29 @@
   }];
 }
 
-- (void)askPeersToCalculateOffset {
+- (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers {
   // Send the "sync" command to peers to trigger their offset calculations.
   NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"sync"}];
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
   
-  [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
+  [self.connectivityManager sendData:payload toPeers:peers reliable:YES];
 }
 
 // Meant for speakers.
-- (void)calculateTimeOffsetWithHostFromStart:(BOOL)resetBools {
-  if (resetBools) {// These bools are used to track the state of calculation. They must be set to no to go through a full calibration.
-    calibrated = NO;
-  }
-  
-  for (int i=0; i<self.numberOfCalibrations; i++) {
-    NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
-                                                                                        @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentNetworkTime]],
-                                                                                        }];
-    NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
+- (void)calculateTimeOffsetWithHost {
+  if (!isCalibrating) {
+    isCalibrating = YES;// Used to track the calibration
+    [calculatedOffsets removeAllObjects];// Remove all previously calculated offsets
     
-    [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
+    // Send a ping per calibration required (the average will be done later)
+    for (int i=0; i<self.numberOfCalibrations; i++) {
+      NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
+                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentNetworkTime]],
+                                                                                          }];
+      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
+      
+      [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
+    }
   }
 }
 
@@ -109,7 +111,6 @@
     while (val > [self currentNetworkTime]) {
       [NSThread sleepForTimeInterval:0];
     }
-    NSLog(@"executed block that request time: %llu at time: %llu", val, [self currentNetworkTime]);
     block();
   });
   
@@ -130,7 +131,7 @@
   
   // Check if the host is asking us to sync
   if ([payload[@"command"] isEqualToString:@"sync"]) {
-    [self calculateTimeOffsetWithHostFromStart:YES];
+    [self calculateTimeOffsetWithHost];
     
     return;
     
@@ -158,7 +159,7 @@
     uint64_t timePingSent = ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue;
     uint64_t timeHostReceivedPing = ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
-    //uint64_t latencyWithHost = ([self currentNetworkTime] - timePingSent)/2;
+    //uint64_t latencyWithHost = ([self currentNetworkTime] - timePingSent)/2;// Calculates the estimated latency for one way travel
     
     int64_t calculatedOffset = ((int64_t)[self currentNetworkTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it doesn't depend on latency
     //calculatedOffset2 = latencyWithHost - timeHostReceivedPing + timePingSent;// WAY 2
@@ -173,15 +174,15 @@
       }
       
       self.hostTimeOffset = numeratorForAverage/(int64_t)self.numberOfCalibrations;
-      NSLog(@"calculated hostTimeOffset: %lli from %llu offsets: %@", self.hostTimeOffset, self.numberOfCalibrations, calculatedOffsets);
-      
-      calibrated = YES; // No calibrating twice.
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
       [self.connectivityManager sendData:payload toPeers:@[peerID] reliable:YES];
+      
+      // Update the bool
+      isCalibrating = NO;
     }
     
     return;
