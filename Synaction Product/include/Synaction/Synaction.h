@@ -51,8 +51,8 @@ typedef void(^ _Nullable calibrationBlock)(MCPeerID * _Nullable peer);
 
 + (instancetype _Nonnull)sharedManager;
 
-- (void)askPeersToCalculateOffset;
-- (void)calculateTimeOffsetWithHostFromStart:(BOOL)resetBools;
+- (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers;
+- (void)calculateTimeOffsetWithHost;
 - (uint64_t)currentNetworkTime;
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;
 - (void)executeBlockWhenPeerCalibrates:(MCPeerID * _Nonnull)peer block:(calibrationBlock)completionBlock;
