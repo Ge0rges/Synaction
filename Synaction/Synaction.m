@@ -137,7 +137,7 @@
   // that we wanted. This takes us from an accuracy of ~1ms to an accuracy of ~0.01ms, i.e. two orders
   // of magnitude improvement. However, of course the downside is that this will block the main thread
   // for 1.3ms.
-  dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)val + self.hostTimeOffset - (int64_t)[self currentNetworkTime] - 1300000);
+  dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, val - [self currentNetworkTime] - 1300000);
   dispatch_source_set_timer(timer, at_time, DISPATCH_TIME_FOREVER /*one shot*/, 0 /* minimal leeway */);
   dispatch_resume(timer);
 }
