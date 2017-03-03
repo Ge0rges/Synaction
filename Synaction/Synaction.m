@@ -45,19 +45,37 @@
 
 #pragma mark - Network Time Sync
 // Host
-- (void)executeBlockWhenPeerCalibrates:(MCPeerID * _Nonnull)peer block:(calibrationBlock)completionBlock {
-  if ([self.calibratedPeers containsObject:peer]) {// Already calibrated
-    completionBlock(peer);
+- (void)executeBlockWhenPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
+  // Check if these peers already had the time to calibrate
+  NSSet *peersSet = [NSSet setWithArray:peers];
+  
+  if ([peersSet isEqualToSet:self.calibratedPeers]) {// Already calibrated
+    completionBlock(peers);
     return;
   }
   
+  // They didn't. Register to receive notifications. Execute when all are calibrated.
   __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-    if ([notification.userInfo[@"calibratedPeer"] isEqual:peer]) {
-      completionBlock(peer);
+    
+    __block BOOL executeBlock = YES;
+    
+    // Check that every object in peers is contained in calibratedPeers
+    [peers enumerateObjectsUsingBlock:^(MCPeerID * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+      if (executeBlock) {// Make sure a NO doesn't get switched to a YES.
+        executeBlock = [self.calibratedPeers containsObject:obj];
+      }
+      
+      *stop = !executeBlock;// Stop if executeBlock is NO.
+    }];
+    
+    // Check if we should execute the block
+    if (executeBlock) {
+      completionBlock(peers);
       [[NSNotificationCenter defaultCenter] removeObserver:observer];
     }
   }];
 }
+
 
 - (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers {
   // Send the "sync" command to peers to trigger their offset calculations.
