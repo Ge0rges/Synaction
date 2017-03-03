@@ -113,7 +113,7 @@
 }
 
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
-  if (val < [self currentNetworkTime]) {// The value has already passed execute immediately.
+  if (val <= [self currentNetworkTime]) {// The value has already passed execute immediately.
     block();
     return;
   }
