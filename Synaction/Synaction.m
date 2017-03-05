@@ -45,7 +45,7 @@
 
 #pragma mark - Network Time Sync
 // Host
-- (void)executeBlockWhenPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
+- (void)executeBlockWhenAllPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
   // Check if these peers already had the time to calibrate
   NSSet *peersSet = [NSSet setWithArray:peers];
   
@@ -76,6 +76,32 @@
   }];
 }
 
+- (void)executeBlockWhenEachPeerCalibrates:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
+  // Check if these peers already had the time to calibrate
+  NSSet *peersSet = [NSSet setWithArray:peers];
+  
+  for (MCPeerID *peer in peersSet) {
+    if ([self.calibratedPeers containsObject:peer]) {// Already calibrated
+      completionBlock(@[peer]);
+      return;
+    }
+  }
+  
+  // They didn't. Register to receive notifications. Execute when each one is calibrated.
+  __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
+    for (MCPeerID *peer in peersSet) {
+      if ([self.calibratedPeers containsObject:peer]) {// Already calibrated
+        completionBlock(@[peer]);
+        return;
+      }
+    }
+  }];
+  
+  // Unsubscribe when every one calibrates.
+  [self executeBlockWhenAllPeersCalibrate:peers block:^(NSArray<MCPeerID *> * _Nullable peers) {
+    [[NSNotificationCenter defaultCenter] removeObserver:observer];
+  }];
+}
 
 - (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers {
   // Send the "sync" command to peers to trigger their offset calculations.
