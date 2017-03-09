@@ -52,7 +52,7 @@ typedef void(^ _Nullable calibrationBlock)(NSArray <MCPeerID *> * _Nullable peer
 + (instancetype _Nonnull)sharedManager;// Use this to get an instance of Synaction
 
 - (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers;// Asks the peers to call -calculateTimeOffsetWithHost, when completed the block of -executeBlockWhenPeerCalibrates will be called on host.
-- (void)calculateTimeOffsetWithHost;// Calculate the time difference in nanoseconds between us and the host device.
+- (void)calculateTimeOffsetWithHost:(MCPeerID * _Nonnull)hostPeer;// Calculate the time difference in nanoseconds between us and the host device.
 - (uint64_t)currentNetworkTime;// The current host time adjusted for offset (offset = 0 if host)
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;// Run block at the exact host adjusted time val adjusted
 - (void)executeBlockWhenAllPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock;// Once EVERY peer in the array calibrates this will be called

@@ -112,7 +112,7 @@
 }
 
 // Meant for speakers.
-- (void)calculateTimeOffsetWithHost {
+- (void)calculateTimeOffsetWithHost:(MCPeerID *)hostPeer {
   if (!isCalibrating) {
     isCalibrating = YES;// Used to track the calibration
     [calculatedOffsets removeAllObjects];// Remove all previously calculated offsets
@@ -126,7 +126,7 @@
                                                                                           }];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
+      [self.connectivityManager sendData:payload toPeers:@[hostPeer] reliable:YES];
     }
     
     // Handle 0 calibrations
@@ -138,7 +138,7 @@
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
+      [self.connectivityManager sendData:payload toPeers:@[hostPeer] reliable:YES];
     }
   }
 }
@@ -192,7 +192,7 @@
   
   // Check if the host is asking us to sync
   if ([payload[@"command"] isEqualToString:@"sync"]) {
-    [self calculateTimeOffsetWithHost];
+    [self calculateTimeOffsetWithHost:peerID];
     
     return;
     
