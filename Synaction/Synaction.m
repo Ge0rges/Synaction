@@ -47,14 +47,12 @@
 // Host
 - (void)executeBlockWhenAllPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
   // Check if these peers already had the time to calibrate
-  NSSet *peersSet = [NSSet setWithArray:peers];
-  
-  if ([peersSet isEqualToSet:self.calibratedPeers]) {// Already calibrated
+  if (self.calibratedPeers.count >= peers.count || (peers.count > self.connectivityManager.allPeers.count && peers.count > self.calibratedPeers.count)) {// Already calibrated
     completionBlock(peers);
     return;
   }
   
-  // They didn't. Register to receive notifications. Execute when all are calibrated.
+  // They didn't calibrate. Register to receive notifications. Execute when all are calibrated.
   __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
     
     __block BOOL executeBlock = YES;
@@ -62,7 +60,9 @@
     // Check that every object in peers is contained in calibratedPeers
     [peers enumerateObjectsUsingBlock:^(MCPeerID * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
       if (executeBlock) {// Make sure a NO doesn't get switched to a YES.
-        executeBlock = [self.calibratedPeers containsObject:obj];
+        if ([self.connectivityManager.allPeers containsObject:obj]) {// Make sure this peer is still connected
+          executeBlock = [self.calibratedPeers containsObject:obj];
+        }
       }
       
       *stop = !executeBlock;// Stop if executeBlock is NO.
@@ -78,28 +78,29 @@
 
 - (void)executeBlockWhenEachPeerCalibrates:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
   // Check if these peers already had the time to calibrate
+  __block NSMutableArray *peersMut = [peers mutableCopy];// Tracks which peers haven't calibrated yet and caused a notification
   NSSet *peersSet = [NSSet setWithArray:peers];
   
   for (MCPeerID *peer in peersSet) {
     if ([self.calibratedPeers containsObject:peer]) {// Already calibrated
       completionBlock(@[peer]);
-      return;
+      [peersMut removeObject:peer];
     }
   }
   
   // They didn't. Register to receive notifications. Execute when each one is calibrated.
   __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
     for (MCPeerID *peer in peersSet) {
-      if ([self.calibratedPeers containsObject:peer]) {// Already calibrated
+      if ([self.calibratedPeers containsObject:peer] && [peersMut containsObject:peer]) {// Newly calibrated
         completionBlock(@[peer]);
-        return;
+        [peersMut removeObject:peer];
       }
     }
-  }];
-  
-  // Unsubscribe when every one calibrates.
-  [self executeBlockWhenAllPeersCalibrate:peers block:^(NSArray<MCPeerID *> * _Nullable peers) {
-    [[NSNotificationCenter defaultCenter] removeObserver:observer];
+    
+    // Unsubscribe when every one calibrates.
+    if (peersMut.count == 0) {
+      [[NSNotificationCenter defaultCenter] removeObserver:observer];
+    }
   }];
 }
 
