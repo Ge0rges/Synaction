@@ -63,5 +63,6 @@ typedef void(^ _Nullable calibrationBlock)(NSArray <MCPeerID *> * _Nullable peer
 @property (nonatomic, readonly) uint64_t maxNumberOfCalibrations;// The number of calibrations to be used to calculate the averaga offset offset
 @property (nonatomic, readonly) uint64_t latencyWithHost;// The calculated latency between the peer and host. Only on peer.
 @property (nonatomic, readonly) int64_t hostTimeOffset;// The calculated offset between the peer and the host. Only on peer.
+@property (strong, nonatomic) ConnectivityManager * _Nonnull connectivityManager;// The accompanying connectivity manager.
 
 @end
