@@ -18,8 +18,6 @@
   BOOL isCalibrating;
 }
 
-@property (strong, nonatomic) ConnectivityManager *connectivityManager;
-
 @property (nonatomic) int64_t hostTimeOffset;// Offset between this device and the host, in nanoseconds. 0 on host.
 @property (nonatomic) uint64_t latencyWithHost;// Calculated latency with host for one ping (one-way) based on offsetWithHost, in nanoseconds.
 @property (nonatomic) uint64_t maxNumberOfCalibrations;
@@ -108,8 +106,14 @@
 }
 
 - (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers {
+  if (!peers) {
+    NSAssert(!peers, @"Peers cannot be nil when calling `-askPeersToCalculateOffset`");
+  }
+  
   // Remove all peer calibrated
-  [self.calibratedPeers removeAllObjects];
+  for (MCPeerID *peerID in peers) {
+    [self.calibratedPeers removeObject:peerID];
+  }
   
   // Send the "sync" command to peers to trigger their offset calculations.
   NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"sync"}];
