@@ -126,6 +126,8 @@
 - (void)calculateTimeOffsetWithHost:(MCPeerID *)hostPeer {
   if (!isCalibrating) {
     isCalibrating = YES;// Used to track the calibration
+    self.hostTimeOffset = 0;
+
     calculatedOffsets = 0;// Reset calculated offsets number
     totalCalculatedOffsets = 0;
     
