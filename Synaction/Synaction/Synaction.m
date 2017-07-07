@@ -15,12 +15,12 @@
 @interface Synaction () {
   double calculatedOffsets;
   double totalCalculatedOffsets;
-  BOOL isCalibrating;
 }
 
 @property (nonatomic) int64_t hostTimeOffset;// Offset between this device and the host, in nanoseconds. 0 on host.
 @property (nonatomic) uint64_t latencyWithHost;// Calculated latency with host for one ping (one-way) based on offsetWithHost, in nanoseconds.
 @property (nonatomic) uint64_t maxNumberOfCalibrations;
+@property (nonatomic) BOOL isCalibrating;
 
 @end
 
@@ -31,7 +31,7 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedManager = [[self alloc] init];
-    sharedManager.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
+    sharedManager.connectivityManager = [ConnectivityManager sharedManager];
     sharedManager.connectivityManager.synaction = sharedManager;
     sharedManager.hostTimeOffset = 0;
     sharedManager.maxNumberOfCalibrations = 50000;
@@ -46,9 +46,9 @@
 
 #pragma mark - Network Time Sync
 // Host
-- (void)executeBlockWhenAllPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
+- (void)executeBlockWhenAllPeersCalibrate:(NSArray <GCDAsyncSocket *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
   // Check if these peers already had the time to calibrate
-  if (self.calibratedPeers.count >= peers.count || (peers.count > self.connectivityManager.allPeers.count && peers.count > self.calibratedPeers.count)) {// Already calibrated
+  if (self.calibratedPeers.count >= peers.count || (peers.count > self.connectivityManager.allSockets.count && peers.count > self.calibratedPeers.count)) {// Already calibrated
     completionBlock(peers);
     return;
   }
@@ -59,9 +59,9 @@
     __block BOOL executeBlock = YES;
     
     // Check that every object in peers is contained in calibratedPeers
-    [peers enumerateObjectsUsingBlock:^(MCPeerID * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [peers enumerateObjectsUsingBlock:^(GCDAsyncSocket * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
       if (executeBlock) {// Make sure a NO doesn't get switched to a YES.
-        if ([self.connectivityManager.allPeers containsObject:obj]) {// Make sure this peer is still connected
+        if ([self.connectivityManager.allSockets containsObject:obj]) {// Make sure this peer is still connected
           executeBlock = [self.calibratedPeers containsObject:obj];
         }
       }
@@ -77,12 +77,12 @@
   }];
 }
 
-- (void)executeBlockWhenEachPeerCalibrates:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
+- (void)executeBlockWhenEachPeerCalibrates:(NSArray <GCDAsyncSocket *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
   // Check if these peers already had the time to calibrate
   __block NSMutableArray *peersMut = [peers mutableCopy];// Tracks which peers haven't calibrated yet and caused a notification
   NSSet *peersSet = [NSSet setWithArray:peers];
   
-  for (MCPeerID *peer in peersSet) {
+  for (GCDAsyncSocket *peer in peersSet) {
     if ([self.calibratedPeers containsObject:peer]) {// Already calibrated
       completionBlock(@[peer]);
       [peersMut removeObject:peer];
@@ -91,7 +91,7 @@
   
   // They didn't. Register to receive notifications. Execute when each one is calibrated.
   __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-    for (MCPeerID *peer in peersSet) {
+    for (GCDAsyncSocket *peer in peersSet) {
       if ([self.calibratedPeers containsObject:peer] && [peersMut containsObject:peer]) {// Newly calibrated
         completionBlock(@[peer]);
         [peersMut removeObject:peer];
@@ -105,13 +105,14 @@
   }];
 }
 
-- (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers {
+- (void)askPeersToCalculateOffset:(NSArray <GCDAsyncSocket*>* _Nonnull)peers {
   if (!peers) {
-    NSAssert(!peers, @"Peers cannot be nil when calling `-askPeersToCalculateOffset`");
+    NSLog(@"Peers cannot be nil when calling `-askPeersToCalculateOffset`");
+		return;
   }
   
   // Remove all peer calibrated
-  for (MCPeerID *peerID in peers) {
+  for (GCDAsyncSocket *peerID in peers) {
     [self.calibratedPeers removeObject:peerID];
   }
   
@@ -119,38 +120,47 @@
   NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"sync"}];
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
   
-  [self.connectivityManager sendData:payload toPeers:peers reliable:YES];
+  Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
+  [self.connectivityManager sendPacket:packet toSockets:peers];
 }
 
-// Meant for speakers.
-- (void)calculateTimeOffsetWithHost:(MCPeerID *)hostPeer {
-  if (!isCalibrating) {
-    isCalibrating = YES;// Used to track the calibration
-    self.hostTimeOffset = 0;
-
+// Meant for peers.
+- (void)calculateTimeOffsetWithHost:(GCDAsyncSocket *)hostPeer {
+	NSLog(@"Called calibrate function.");
+	
+  if (!self.isCalibrating) {
+		NSLog(@"Calibration request valid sending ping.");
+		
+    self.isCalibrating = YES;// Used to track the calibration
     calculatedOffsets = 0;// Reset calculated offsets number
     totalCalculatedOffsets = 0;
     
     // Handle 0 calibrations
     if (self.maxNumberOfCalibrations == 0) {
-      isCalibrating = NO;
+			NSLog(@"Max calibs 0 so ending now.");
+			
+      self.isCalibrating = NO;
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      [self.connectivityManager sendData:payload toPeers:@[hostPeer] reliable:YES];
+      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
+      [self.connectivityManager sendPacket:packet toSockets:@[hostPeer]];
       
       return;
     }
-    
+		
+		NSLog(@"Sending initial ping.");
+		
     // Send a starting ping
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
                                                                                         @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
                                                                                         }];
     NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
     
-    [self.connectivityManager sendData:payload toPeers:@[hostPeer] reliable:YES];
+    Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
+    [self.connectivityManager sendPacket:packet toSockets:@[hostPeer]];
   }
 }
 
@@ -168,7 +178,7 @@
 }
 
 - (uint64_t)currentNetworkTime {
-  return (int64_t)[self currentTime] - self.hostTimeOffset;
+  return [self currentTime] - self.hostTimeOffset;
 }
 
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
@@ -201,21 +211,25 @@
   dispatch_resume(timer);
 }
 
-- (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
+- (void)didReceivePacket:(Packet *)packet fromSocket:(GCDAsyncSocket *)socket {
   
-  NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+  NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:packet.data];
   
   // Check if the host is asking us to sync
   if ([payload[@"command"] isEqualToString:@"sync"]) {
-    [self calculateTimeOffsetWithHost:peerID];
-    
+		NSLog(@"Host asked us to sync.");
+    [self calculateTimeOffsetWithHost:socket];
+		
     return;
     
   } else if ([payload[@"command"] isEqualToString:@"syncDone"]) {
-    [self.calibratedPeers addObject:peerID];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"peerCalibrated" object:self.calibratedPeers userInfo:@{@"calibratedPeer": peerID}];
+		NSLog(@"peer told us sync done");
+		
+    [self.calibratedPeers addObject:socket];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"peerCalibrated" object:self.calibratedPeers userInfo:@{@"calibratedPeer": socket}];
     
     return;
+		
   } else if ([payload[@"command"] isEqualToString:@"syncPing"]) {// This is done on the peer with which we are calculating the offset (Host).
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPong",
                                                                                         @"timeReceived": [NSNumber numberWithUnsignedLongLong:[self currentTime]],
@@ -224,7 +238,9 @@
     
     NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
     
-    [self.connectivityManager sendData:payload toPeers:@[peerID] reliable:YES];// Speakers are only connected to the host.
+    // Speakers are only connected to the host.
+    Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
+    [self.connectivityManager sendPacket:packet toSockets:@[socket]];
     
     return;
     
@@ -244,7 +260,8 @@
                                                                                           }];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      [self.connectivityManager sendData:payload toPeers:@[peerID] reliable:YES];
+      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
+      [self.connectivityManager sendPacket:packet toSockets:@[socket]];
       
       return;
     }
@@ -271,14 +288,18 @@
     
     // If calculation is done notify the host.
     if (calculatedOffsets >= self.maxNumberOfCalibrations) {
+      NSLog(@"Calibration done, informing host.");
+      
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      [self.connectivityManager sendData:payload toPeers:@[peerID] reliable:YES];
+      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
+      [self.connectivityManager sendPacket:packet toSockets:@[socket]];
       
       // Update the bool
-      isCalibrating = NO;
+      self.isCalibrating = NO;
+      [[NSNotificationCenter defaultCenter] postNotificationName:@"CalibrationDone" object:self];
       
     } else {
       // Send another calibration request.
@@ -287,20 +308,22 @@
                                                                                           }];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      [self.connectivityManager sendData:payload toPeers:@[peerID] reliable:YES];
+      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
+      [self.connectivityManager sendPacket:packet toSockets:@[socket]];
     }
     
     return;
   }
 }
 
-- (void)session:(MCSession* _Nonnull)session peer:(MCPeerID* _Nonnull)peerID didChangeState:(MCSessionState)state {
-  // Remove the disconnected peer from the calibratde peer list if it's there.
-  if (state == MCSessionStateNotConnected) {
-    [self.calibratedPeers removeObject:peerID];
-    isCalibrating = NO;
-    self.hostTimeOffset = 0;
+- (void)socketDidDisconnect:(GCDAsyncSocket *)socket withError:(NSError *)error {
+  // Remove any reference to this socket
+  if (socket) {
+    [self.calibratedPeers removeObject:socket];
   }
+  
+  self.isCalibrating = NO;
+  self.hostTimeOffset = 0;
 }
 
 @end
