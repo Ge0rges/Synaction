@@ -34,7 +34,7 @@
     sharedManager.connectivityManager = [ConnectivityManager sharedManager];
     sharedManager.connectivityManager.synaction = sharedManager;
     sharedManager.hostTimeOffset = 0;
-    sharedManager.maxNumberOfCalibrations = 50000;
+    sharedManager.maxNumberOfCalibrations = 5000;
     sharedManager.calibratedPeers = [NSMutableSet new];
     sharedManager->calculatedOffsets = 0;
     sharedManager->totalCalculatedOffsets = 0;
@@ -49,6 +49,7 @@
 - (void)executeBlockWhenAllPeersCalibrate:(NSArray <GCDAsyncSocket *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
   // Check if these peers already had the time to calibrate
   if (self.calibratedPeers.count >= peers.count || (peers.count > self.connectivityManager.allSockets.count && peers.count > self.calibratedPeers.count)) {// Already calibrated
+		NSLog(@"Executing block for all peers calibrated, already calibrated!");
     completionBlock(peers);
     return;
   }
@@ -212,7 +213,7 @@
 }
 
 - (void)didReceivePacket:(Packet *)packet fromSocket:(GCDAsyncSocket *)socket {
-  
+  int64_t timeReceived = (int64_t)[self currentTime];
   NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:packet.data];
   
   // Check if the host is asking us to sync
@@ -223,7 +224,7 @@
     return;
     
   } else if ([payload[@"command"] isEqualToString:@"syncDone"]) {
-		NSLog(@"peer told us sync done");
+	NSLog(@"peer told us sync done");
 		
     [self.calibratedPeers addObject:socket];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"peerCalibrated" object:self.calibratedPeers userInfo:@{@"calibratedPeer": socket}];
@@ -232,7 +233,7 @@
 		
   } else if ([payload[@"command"] isEqualToString:@"syncPing"]) {// This is done on the peer with which we are calculating the offset (Host).
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPong",
-                                                                                        @"timeReceived": [NSNumber numberWithUnsignedLongLong:[self currentTime]],
+                                                                                        @"timeReceived": [NSNumber numberWithUnsignedLongLong:timeReceived],
                                                                                         @"timeSent": payload[@"timeSent"],
                                                                                         }];
     
@@ -251,12 +252,13 @@
     uint64_t timePingSent = ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue;
     uint64_t timeHostReceivedPing = ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
-    //uint64_t latencyWithHost = ([self currentTime] - timePingSent)/2;// Calculates the estimated latency for one way travel
+    //uint64_t latencyWithHost = (timeReceived - timePingSent)/2;// Calculates the estimated latency for one way travel
     
-    // If this calculation doesn't meet our error margin, restart.
-    if (((int64_t)[self currentTime] - (int64_t)timePingSent) > 25000000000) {
+    // If this calculation doesn't meet our error margin (2s), restart.
+    if (((int64_t)[self currentTime] - (int64_t)timePingSent) > 2000000000) {
+	  NSLog(@"Calibration took too long. Repeating.");
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
-                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
+                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:timeReceived]
                                                                                           }];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
@@ -266,29 +268,28 @@
       return;
     }
     
-    int64_t calculatedOffset = ((int64_t)[self currentTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it doesn't depend on latency
-    //calculatedOffset2 = (int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)timePingSent;// WAY 2
-    //calculatedOffset3 = -(int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)[self currentTime];// WAY 3
-    
+    int64_t calculatedOffset = ((int64_t)[self currentTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2;
+	  
     totalCalculatedOffsets += calculatedOffset;
     calculatedOffsets += 1;
     
     NSLog(@"Calculated calibration. Total: %f", calculatedOffsets);
     
     // If the calibration is accurate enough just end it.
+	BOOL doneCalibrating = false;
     double newOffset = totalCalculatedOffsets/calculatedOffsets;
-    
-    if (fabs(newOffset-self.hostTimeOffset) < 5000) {
-      self.maxNumberOfCalibrations = calculatedOffsets;
-      NSLog(@"prematurely ended calibration because accurate enough at value: %f", newOffset);
+	  
+    if (fabs(newOffset-self.hostTimeOffset) <= 500) {
+	  doneCalibrating = true;
+	  NSLog(@"prematurely ended calibration because accurate enough with difference old/new: %f", fabs(newOffset-self.hostTimeOffset));
     }
-    
+	NSLog(@"Got diff old/new: %f", fabs(newOffset-self.hostTimeOffset));
+	  
     self.hostTimeOffset = newOffset;
     
-    
     // If calculation is done notify the host.
-    if (calculatedOffsets >= self.maxNumberOfCalibrations) {
-      NSLog(@"Calibration done, informing host.");
+    if (calculatedOffsets >= self.maxNumberOfCalibrations || doneCalibrating) {
+      NSLog(@"Calibration done with maximum number of calibrations, informing host.");
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
@@ -299,8 +300,10 @@
       
       // Update the bool
       self.isCalibrating = NO;
-      [[NSNotificationCenter defaultCenter] postNotificationName:@"CalibrationDone" object:self];
-      
+			
+			// Post the calibration done notification
+			[[NSNotificationCenter defaultCenter] postNotificationName:CalibrationDoneNotificationName object:self];
+			
     } else {
       // Send another calibration request.
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
