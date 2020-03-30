@@ -1,0 +1,407 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		FB51C86A1E4F71FB0054903F /* UniversalLib */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FB51C86B1E4F71FB0054903F /* Build configuration list for PBXAggregateTarget "UniversalLib" */;
+			buildPhases = (
+				FB51C86E1E4F72140054903F /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = UniversalLib;
+			productName = UniversalLib;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		1BDF39D88819661A61E43E53 /* Pods_Synaction.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7B6B0E04228095C6F12D367 /* Pods_Synaction.framework */; };
+		FB41BD6C1F0F81EF0095989D /* ConnectivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB41BD691F0F81EF0095989D /* ConnectivityManager.m */; };
+		FB41BD6D1F0F81EF0095989D /* Packet.m in Sources */ = {isa = PBXBuildFile; fileRef = FB41BD6B1F0F81EF0095989D /* Packet.m */; };
+		FB41BD701F0F82010095989D /* Synaction.m in Sources */ = {isa = PBXBuildFile; fileRef = FB41BD6F1F0F82010095989D /* Synaction.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FB51C8591E4F6F9E0054903F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		4C3EC1878BBE06EC8778D3F8 /* Pods-Synaction.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Synaction.release.xcconfig"; path = "Pods/Target Support Files/Pods-Synaction/Pods-Synaction.release.xcconfig"; sourceTree = "<group>"; };
+		D2B2A647ADBFBA3D0133F612 /* Pods-Synaction.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Synaction.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Synaction/Pods-Synaction.debug.xcconfig"; sourceTree = "<group>"; };
+		D7B6B0E04228095C6F12D367 /* Pods_Synaction.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Synaction.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB41BD681F0F81EF0095989D /* ConnectivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConnectivityManager.h; path = "Connectivity Manager/ConnectivityManager.h"; sourceTree = "<group>"; };
+		FB41BD691F0F81EF0095989D /* ConnectivityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectivityManager.m; path = "Connectivity Manager/ConnectivityManager.m"; sourceTree = "<group>"; };
+		FB41BD6A1F0F81EF0095989D /* Packet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Packet.h; path = "Connectivity Manager/Packet.h"; sourceTree = "<group>"; };
+		FB41BD6B1F0F81EF0095989D /* Packet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Packet.m; path = "Connectivity Manager/Packet.m"; sourceTree = "<group>"; };
+		FB41BD6E1F0F82010095989D /* Synaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Synaction.h; path = Synaction/Synaction.h; sourceTree = "<group>"; };
+		FB41BD6F1F0F82010095989D /* Synaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Synaction.m; path = Synaction/Synaction.m; sourceTree = "<group>"; };
+		FB51C85B1E4F6F9E0054903F /* libSynaction.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSynaction.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FB51C8581E4F6F9E0054903F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1BDF39D88819661A61E43E53 /* Pods_Synaction.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		23AAAE27119E5BEAD542ACF9 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D2B2A647ADBFBA3D0133F612 /* Pods-Synaction.debug.xcconfig */,
+				4C3EC1878BBE06EC8778D3F8 /* Pods-Synaction.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		4D1BF18983FD77FCE04F17D3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D7B6B0E04228095C6F12D367 /* Pods_Synaction.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FB41BD711F0F82060095989D /* Connectivity Manager */ = {
+			isa = PBXGroup;
+			children = (
+				FB41BD681F0F81EF0095989D /* ConnectivityManager.h */,
+				FB41BD691F0F81EF0095989D /* ConnectivityManager.m */,
+				FB41BD6A1F0F81EF0095989D /* Packet.h */,
+				FB41BD6B1F0F81EF0095989D /* Packet.m */,
+			);
+			name = "Connectivity Manager";
+			sourceTree = "<group>";
+		};
+		FB51C8521E4F6F9E0054903F = {
+			isa = PBXGroup;
+			children = (
+				FB51C85D1E4F6F9E0054903F /* Synaction */,
+				FB51C85C1E4F6F9E0054903F /* Products */,
+				23AAAE27119E5BEAD542ACF9 /* Pods */,
+				4D1BF18983FD77FCE04F17D3 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		FB51C85C1E4F6F9E0054903F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FB51C85B1E4F6F9E0054903F /* libSynaction.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FB51C85D1E4F6F9E0054903F /* Synaction */ = {
+			isa = PBXGroup;
+			children = (
+				FB41BD6E1F0F82010095989D /* Synaction.h */,
+				FB41BD6F1F0F82010095989D /* Synaction.m */,
+				FB41BD711F0F82060095989D /* Connectivity Manager */,
+			);
+			path = Synaction;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FB51C85A1E4F6F9E0054903F /* Synaction */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FB51C8641E4F6F9E0054903F /* Build configuration list for PBXNativeTarget "Synaction" */;
+			buildPhases = (
+				51180B52E8913C7399A603E7 /* [CP] Check Pods Manifest.lock */,
+				FB51C8571E4F6F9E0054903F /* Sources */,
+				FB51C8581E4F6F9E0054903F /* Frameworks */,
+				FB51C8591E4F6F9E0054903F /* CopyFiles */,
+				C34B9C44E51D86E2E70D1191 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Synaction;
+			productName = Synaction;
+			productReference = FB51C85B1E4F6F9E0054903F /* libSynaction.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FB51C8531E4F6F9E0054903F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = "Georges Kanaan";
+				TargetAttributes = {
+					FB51C85A1E4F6F9E0054903F = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 7DTJP5N92F;
+						ProvisioningStyle = Automatic;
+					};
+					FB51C86A1E4F71FB0054903F = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 7DTJP5N92F;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = FB51C8561E4F6F9E0054903F /* Build configuration list for PBXProject "Synaction" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FB51C8521E4F6F9E0054903F;
+			productRefGroup = FB51C85C1E4F6F9E0054903F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FB51C85A1E4F6F9E0054903F /* Synaction */,
+				FB51C86A1E4F71FB0054903F /* UniversalLib */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		51180B52E8913C7399A603E7 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C34B9C44E51D86E2E70D1191 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Synaction/Pods-Synaction-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FB51C86E1E4F72140054903F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#Configurations.\n#This script designed for Mac OS X command-line, so does not use Xcode build variables.\n#But you can use it freely if you want.\n\nTARGET=Synaction\nACTION=\"clean build\"\nFILE_NAME=libSynaction.a\n\nDEVICE=iphoneos3.2\nSIMULATOR=iphonesimulator3.2\n\n#Build for all platforms/configurations.\n\nxcodebuild -configuration Debug -target ${TARGET} -sdk ${DEVICE} ${ACTION} RUN_CLANG_STATIC_ANALYZER=NO\nxcodebuild -configuration Debug -target ${TARGET} -sdk ${SIMULATOR} ${ACTION} RUN_CLANG_STATIC_ANALYZER=NO\n\n#Merge all platform binaries as a fat binary for each configurations.\n\nDEBUG_DEVICE_DIR=${SYMROOT}/Debug-iphoneos\nDEBUG_SIMULATOR_DIR=${SYMROOT}/Debug-iphonesimulator\nDEBUG_UNIVERSAL_DIR=${SYMROOT}/Debug-universal\n\nrm -rf \"${DEBUG_UNIVERSAL_DIR}\"\nmkdir \"${DEBUG_UNIVERSAL_DIR}\"\n\nlipo -create -output \"${DEBUG_UNIVERSAL_DIR}/${FILE_NAME}\" \"${DEBUG_DEVICE_DIR}/${FILE_NAME}\" \"${DEBUG_SIMULATOR_DIR}/${FILE_NAME}\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FB51C8571E4F6F9E0054903F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB41BD701F0F82010095989D /* Synaction.m in Sources */,
+				FB41BD6C1F0F81EF0095989D /* ConnectivityManager.m in Sources */,
+				FB41BD6D1F0F81EF0095989D /* Packet.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FB51C8621E4F6F9E0054903F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2B2A647ADBFBA3D0133F612 /* Pods-Synaction.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "$(inherited)";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FB51C8631E4F6F9E0054903F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4C3EC1878BBE06EC8778D3F8 /* Pods-Synaction.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "$(inherited)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FB51C8651E4F6F9E0054903F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2B2A647ADBFBA3D0133F612 /* Pods-Synaction.debug.xcconfig */;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
+				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		FB51C8661E4F6F9E0054903F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4C3EC1878BBE06EC8778D3F8 /* Pods-Synaction.release.xcconfig */;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
+				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		FB51C86C1E4F71FB0054903F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FB51C86D1E4F71FB0054903F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FB51C8561E4F6F9E0054903F /* Build configuration list for PBXProject "Synaction" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FB51C8621E4F6F9E0054903F /* Debug */,
+				FB51C8631E4F6F9E0054903F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FB51C8641E4F6F9E0054903F /* Build configuration list for PBXNativeTarget "Synaction" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FB51C8651E4F6F9E0054903F /* Debug */,
+				FB51C8661E4F6F9E0054903F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FB51C86B1E4F71FB0054903F /* Build configuration list for PBXAggregateTarget "UniversalLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FB51C86C1E4F71FB0054903F /* Debug */,
+				FB51C86D1E4F71FB0054903F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FB51C8531E4F6F9E0054903F /* Project object */;
+}
