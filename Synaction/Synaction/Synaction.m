@@ -129,8 +129,8 @@
 - (void)calculateTimeOffsetWithHost:(GCDAsyncSocket *)hostPeer {
 	NSLog(@"Called calibrate function.");
 	
-  if (!self.isCalibrating) {
-		NSLog(@"Calibration request valid sending ping.");
+  if (!self.isCalibrating) {    
+    NSLog(@"Calibration request valid sending ping.");
 		
     self.isCalibrating = YES;// Used to track the calibration
     calculatedOffsets = 0;// Reset calculated offsets number
@@ -138,7 +138,7 @@
     
     // Handle 0 calibrations
     if (self.maxNumberOfCalibrations == 0) {
-			NSLog(@"Max calibs 0 so ending now.");
+      NSLog(@"Max calibs 0 so ending now.");
 			
       self.isCalibrating = NO;
       
