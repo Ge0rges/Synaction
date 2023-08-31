@@ -25,7 +25,7 @@ Documentation for the various functions will (hopefully) eventually be written. 
 
 # Credits
 Both the connectivity manager, and the core components of the mach time calculations were found online and modified.
-[Connectvity Manager](http://stackoverflow.com/a/20907425/2210825 "Stackoverflow Answer")
+[Connectivity Manager](http://stackoverflow.com/a/20907425/2210825 "Stackoverflow Answer")
 
 Mach Time Article: I'm currently not able to find the article from where I pulled this. If you're the author, or have doubts of where it comes from please open an issue!
 
